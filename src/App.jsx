@@ -1,33 +1,54 @@
+
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import Qusetion from './components/Qusetion'
+import qBank from './components/QusetionBank';
+import Score from './components/Score';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [qusetionBank] = useState(qBank);
+  const [currentQustion, setCurrentQuestion] = useState(0);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [score, setSocre] = useState(0);
+  const [quizEnd, setQuizEnd] = useState(false);
+
+
+  const handleOptionChange = (e) => {
+    setSelectedOption(e.target.value);
+  }
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    checkAnswer();
+    handleNextQuestion();
+
+  }
+  const checkAnswer = () => {
+    if (selectedOption == qusetionBank[currentQustion].answer) {
+      setSocre((prevScore) => prevScore + 1);
+    }
+  }
+
+  const handleNextQuestion = () => {
+    if (currentQustion + 1 < qusetionBank.length) {
+      setCurrentQuestion((prev) => prev + 1);
+      setSelectedOption("");
+    }
+    else {
+      setQuizEnd(true);
+    }
+
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {!quizEnd ? <Qusetion
+        qusetion={qusetionBank[currentQustion]}
+        selectedOption={selectedOption}
+        onOptionChange={handleOptionChange}
+        onSubmit={handleFormSubmit}
+      /> : <Score score={score} />}
+
     </>
   )
 }
